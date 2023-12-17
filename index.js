@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Set up Multer for handling file uploads
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Define a route to handle image uploads
 app.post('/upload', upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: 'markImage', maxCount: 1 }]), async (req, res) => {
