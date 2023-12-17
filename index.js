@@ -43,21 +43,21 @@ app.post('/upload', upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: '
 
 // Function to add a watermark to the main image using the mark image
 async function addWatermark(mainImagePath, markImagePath) {
-    try {
-      const mainImage = await Jimp.read(mainImagePath);
-      const markImage = await Jimp.read(markImagePath);
-  
-      // Resize the mark image to match the dimensions of the main image
-      markImage.resize(mainImage.bitmap.width, mainImage.bitmap.height);
-  
-      // Composite the mark image onto the main image
-      mainImage.composite(markImage, 0, 0);
-  
-      // Save the result to a buffer
-      return await mainImage.getBufferAsync(Jimp.MIME_PNG);
-    } catch (error) {
-      throw new Error(`Error adding watermark: ${error.message}`);
-    }
+    const mainImage = await Jimp.read(mainImagePath);
+    const markImage = await Jimp.read(markImagePath);
+
+    // Resize the mark image to match the dimensions of the main image
+    markImage.resize(mainImage.bitmap.width, mainImage.bitmap.height);
+
+    // Composite the mark image onto the main image
+    mainImage.composite(markImage, 0, 0);
+
+    // Save the result to a buffer
+    return await mainImage.getBufferAsync(Jimp.MIME_PNG);
+    // try {
+    // } catch (error) {
+    //   throw new Error(`Error adding watermark: ${error.message}`);
+    // }
   }
   
   
