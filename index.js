@@ -1,6 +1,6 @@
 const express = require('express');
 const multer = require('multer');
-const sharp = require('sharp');
+const Jimp = require('jimp');
 require('dotenv').config();;
 
 const app = express();
@@ -44,22 +44,17 @@ app.post('/upload', upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: '
 // Function to add a watermark to the main image using the mark image
 async function addWatermark(mainImagePath, markImagePath) {
     try {
-      // Read the main image and get its dimensions
-      const mainImageInfo = await sharp(mainImagePath).metadata();
-      
+      const mainImage = await Jimp.read(mainImagePath);
+      const markImage = await Jimp.read(markImagePath);
+  
       // Resize the mark image to match the dimensions of the main image
-      const markImageBuffer = await sharp(markImagePath).resize({
-        width: mainImageInfo.width,
-        height: mainImageInfo.height,
-      }).toBuffer();
+      markImage.resize(mainImage.bitmap.width, mainImage.bitmap.height);
   
-      // Read the main image buffer
-      const mainImageBuffer = await sharp(mainImagePath).toBuffer();
+      // Composite the mark image onto the main image
+      mainImage.composite(markImage, 0, 0);
   
-      // Add watermark to the mainImage using the resized markImage
-      return await sharp(mainImageBuffer)
-        .composite([{ input: markImageBuffer }])
-        .toBuffer();
+      // Save the result to a buffer
+      return await mainImage.getBufferAsync(Jimp.MIME_PNG);
     } catch (error) {
       throw new Error(`Error adding watermark: ${error.message}`);
     }
