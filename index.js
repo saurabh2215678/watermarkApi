@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
-require('dotenv');
+require('dotenv').config();;
 
 const app = express();
 const port = process.env.PORT || 3000;
