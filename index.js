@@ -1,9 +1,10 @@
 const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
+require('dotenv');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Set up Multer for handling file uploads
 const upload = multer({ dest: 'uploads/' });
