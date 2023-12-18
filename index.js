@@ -22,23 +22,17 @@ app.post('/upload', upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: '
         return res.status(400).json({ error: `Missing or unexpected fields: ${missingFields.join(', ')}` });
       }
 
-        // Process the mainImage and markImage
         const mainImage = files['mainImage'][0];
         const markImage = files['markImage'][0];
-        // Inside the route handler, right before calling addWatermark
-        console.log('Main image path:', mainImage.path);
-        console.log('Mark image path:', markImage.path);
 
+        const mainImageBuffer = await Jimp.read(mainImage.buffer);
+        await mainImageBuffer.resize(450, Jimp.AUTO);
+        const resizedBuffer = await mainImageBuffer.getBufferAsync(Jimp.AUTO);
 
-
-        // Add watermark to the mainImage using the markImage
-        const watermarkedBuffer = await addWatermark(mainImage.buffer, markImage.buffer);
-
-        // Convert the watermarked image to base64
+        const watermarkedBuffer = await addWatermark(resizedBuffer, markImage.buffer);
         const watermarkedBase64 = `data:${mainImage.mimetype};base64,${watermarkedBuffer.toString('base64')}`;
-
-        // Send the result as a JSON response
         res.json({ watermarkedImage: watermarkedBase64 });
+        
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Internal server error' });
