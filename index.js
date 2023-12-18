@@ -28,7 +28,7 @@ app.post('/upload', upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: '
         const markImage = files['markImage'][0];
 
         const mainImageBuffer = await Jimp.read(mainImage.buffer);
-        await mainImageBuffer.resize(450, Jimp.AUTO);
+        // await mainImageBuffer.resize(450, Jimp.AUTO);
         const resizedBuffer = await mainImageBuffer.getBufferAsync(Jimp.AUTO);
 
         const watermarkedBuffer = await addWatermark(resizedBuffer, markImage.buffer);
