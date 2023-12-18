@@ -1,7 +1,8 @@
 const express = require('express');
 const multer = require('multer');
 const Jimp = require('jimp');
-require('dotenv').config();;
+require('dotenv').config();
+const cors = require('cors'); 
 
 const app = express();
 const port = process.env.PORT || 3000;
