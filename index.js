@@ -5,6 +5,7 @@ require('dotenv').config();;
 
 const app = express();
 const port = process.env.PORT || 3000;
+app.use(cors());
 
 // Set up Multer for handling file uploads
 const upload = multer({ storage: multer.memoryStorage() });
