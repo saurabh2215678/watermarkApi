@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "prebuild": "if [ -n $ENABLE_SHARP ]; then npm install --include=optional sharp; fi",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
