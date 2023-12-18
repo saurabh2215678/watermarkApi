@@ -25,9 +25,14 @@ app.post('/upload', upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: '
         // Process the mainImage and markImage
         const mainImage = files['mainImage'][0];
         const markImage = files['markImage'][0];
+        // Inside the route handler, right before calling addWatermark
+        console.log('Main image path:', mainImage.path);
+        console.log('Mark image path:', markImage.path);
+
+
 
         // Add watermark to the mainImage using the markImage
-        const watermarkedBuffer = await addWatermark(mainImage.path, markImage.path);
+        const watermarkedBuffer = await addWatermark(mainImage.buffer, markImage.buffer);
 
         // Convert the watermarked image to base64
         const watermarkedBase64 = `data:${mainImage.mimetype};base64,${watermarkedBuffer.toString('base64')}`;
@@ -42,23 +47,23 @@ app.post('/upload', upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: '
 
 
 // Function to add a watermark to the main image using the mark image
-async function addWatermark(mainImagePath, markImagePath) {
-    try {
-      const mainImage = await Jimp.read(mainImagePath);
-      const markImage = await Jimp.read(markImagePath);
-  
-      // Resize the mark image to match the dimensions of the main image
-      markImage.resize(mainImage.bitmap.width, mainImage.bitmap.height);
-  
-      // Composite the mark image onto the main image
-      mainImage.composite(markImage, 0, 0);
-  
-      // Save the result to a buffer
-      return await mainImage.getBufferAsync(Jimp.MIME_PNG);
-    } catch (error) {
-      throw new Error(`Error adding watermark: ${error.message}`);
-    }
+async function addWatermark(mainImageBuffer, markImageBuffer) {
+  try {
+    const mainImage = await Jimp.read(mainImageBuffer);
+    const markImage = await Jimp.read(markImageBuffer);
+
+    // Resize the mark image to match the dimensions of the main image
+    markImage.resize(mainImage.bitmap.width, mainImage.bitmap.height);
+
+    // Composite the mark image onto the main image
+    mainImage.composite(markImage, 0, 0);
+
+    // Save the result to a buffer
+    return await mainImage.getBufferAsync(Jimp.MIME_PNG);
+  } catch (error) {
+    throw new Error(`Error adding watermark: ${error.message}`);
   }
+}
   
   
 // Start the server
