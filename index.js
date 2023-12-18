@@ -1,7 +1,9 @@
 const express = require('express');
 const multer = require('multer');
 const Jimp = require('jimp');
-require('dotenv').config();;
+const webpConverter = require('webp-converter');
+require('dotenv').config();
+const sharp = require('sharp');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,13 +23,22 @@ app.post('/upload', upload.fields([{ name: 'mainImage', maxCount: 1 }, { name: '
   
         return res.status(400).json({ error: `Missing or unexpected fields: ${missingFields.join(', ')}` });
       }
-
         const mainImage = files['mainImage'][0];
         const markImage = files['markImage'][0];
 
-        const mainImageBuffer = await Jimp.read(mainImage.buffer);
-        await mainImageBuffer.resize(450, Jimp.AUTO);
-        const resizedBuffer = await mainImageBuffer.getBufferAsync(Jimp.AUTO);
+        let mainImageBuffer = mainImage.buffer;
+        let resizedBuffer;
+
+        if (mainImage.mimetype === 'image/webp') {
+          mainImageBuffer = await sharp(mainImageBuffer)
+            .toFormat('png')
+            .toBuffer();
+            resizedBuffer = mainImageBuffer;
+        }else{
+          await mainImageBuffer.resize(450, Jimp.AUTO);
+          resizedBuffer = await mainImageBuffer.getBufferAsync(Jimp.AUTO);
+        }
+
 
         const watermarkedBuffer = await addWatermark(resizedBuffer, markImage.buffer);
         const watermarkedBase64 = `data:${mainImage.mimetype};base64,${watermarkedBuffer.toString('base64')}`;
